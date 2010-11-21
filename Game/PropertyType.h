@@ -12,6 +12,7 @@ namespace Game
 {
 	class CPropertyDefSet;
 
+
 	enum EPropertyType : uint8
 	{
 		PROPERTY_TYPE_INT32,
@@ -36,6 +37,38 @@ namespace Game
 #define PROPERTY_TYPE_DEF_TABLE_BEGIN static SPropertyTypeDef aPropertyTypeDef[] = {
 #define PROPERTY_TYPE_DEF_TABLE_END };
 #define PROPERTY_TYPE_DEF(ENUM, TYPE) { sizeof(TYPE) },
+
+	// TODO[egarcia]. Review. RTTI?
+	template <typename T>
+	struct property_type_traits
+	{
+		static const EPropertyType ePropertyType = PROPERTY_TYPE_INVALID;
+	};
+
+	template <>
+	struct property_type_traits<int32>
+	{
+		static const EPropertyType ePropertyType = PROPERTY_TYPE_INT32;
+	};
+
+	template <>
+	struct property_type_traits<float>
+	{
+		static const EPropertyType ePropertyType = PROPERTY_TYPE_FLOAT;
+	};
+
+	template <>
+	struct property_type_traits<std::string>
+	{
+		static const EPropertyType ePropertyType = PROPERTY_TYPE_STRING;
+	};
+
+	template <>
+	struct property_type_traits<CPropertyDefSet*>
+	{
+		static const EPropertyType ePropertyType = PROPERTY_TYPE_PROPERTY_SET_PTR;
+	};
+
 
 	// @TODO[egarcia]: Static assert to enforce num elements, order?
 	PROPERTY_TYPE_DEF_TABLE_BEGIN

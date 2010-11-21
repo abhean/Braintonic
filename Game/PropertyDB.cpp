@@ -1,11 +1,56 @@
 #include "PropertyDB.h"
 #include "PropertyDef.h"
 
+#include <boost/foreach.hpp>
+
 #include <algorithm>
 #include <numeric>
 
+#include <stdlib.h>
+
 namespace Game
 {
+	/**
+	 *
+	 */
+	void CPropertyDB::AllocRows(uint32 _uNumRows)
+	{
+		// We do not currently support DB resizing
+		assert(m_pData == NULL);
+		assert(_GetRowSize() > 0);
+
+		m_uDataSize = _uNumRows * _GetRowSize();
+		m_pData 	= new char[m_uDataSize];
+	}
+
+	/**
+	 *
+	 */
+	uint32 CPropertyDB::CreateRow()
+	{
+		// We do not currently support DB resizing
+		assert(m_uNumRows < _GetNumAllocatedRows());
+
+		return m_uNumRows++;
+	}
+
+	/**
+	 *
+	 */
+	uint32 CPropertyDB::GetNumRows() const
+	{
+		return m_uNumRows;
+	}
+
+	/**
+	 *
+	 */
+	bool CPropertyDB::IsEmpty() const
+	{
+		return m_uNumRows == 0;
+	}
+
+
 	/************************************************************************/
 	/*                                                                      */
 	/************************************************************************/
@@ -13,7 +58,7 @@ namespace Game
 	{
 		// We do not allow to modify the DB Scheme while it has rows
 		// @TODO[egarcia]: It should be considered if removing this limitation is worth the effort (default values, memory reallocating, etc.).
-		assert(m_vRows.empty());
+		assert(m_pData == NULL);
 
 		m_vpPropertyDefs.push_back(_pPropertyDef);
 		m_uCurRowSize += _pPropertyDef->GetValueSize();
@@ -25,10 +70,10 @@ namespace Game
 	{
 		uint16 uSize = 0;
 
-		std::for_each(m_vpPropertyDefs.begin(), m_vpPropertyDefs.end(), [&uSize] (const CPropertyDef& _PropertyDef) 
+		BOOST_FOREACH(const CPropertyDef& _PropertyDef, m_vpPropertyDefs)
 		{
 			uSize += _PropertyDef.GetValueSize();
-		});
+		}
 
 		return uSize;
 	}
@@ -46,7 +91,7 @@ namespace Game
 	 */
 	uint32 CPropertyDB::_CalculateRowOffset( uint32 _uRowIndex ) const
 	{
-		assert(_uRowIndex < m_vRows.size());
+		assert(_uRowIndex < GetNumRows());
 
 		uint32 uOffset = _GetRowSize() * std::max<int32>(0, static_cast<int32>(_uRowIndex) - 1);
 		return uOffset;
@@ -59,7 +104,6 @@ namespace Game
 		assert(_uPropertyIndex < m_vpPropertyDefs.size());
 
 		uint32 uOffset		  = 0;
-		int32  iNumProperties = m_vpPropertyDefs.size();
 		for (uint32 uProperty = 0; uProperty < _uPropertyIndex; ++uProperty)
 		{
 			uOffset += m_vpPropertyDefs[uProperty].GetValueSize();
@@ -75,23 +119,14 @@ namespace Game
 		return _CalculateRowOffset(_uRowIndex) + _CalculatePropertyOffset(_uPropertyIndex);
 	}
 
-
 	/**
+	 *
 	 */
-	CPropertyDB::TDBRow CPropertyDB::CreateAndPushRow()
+	void CPropertyDB::_FreeRows()
 	{
-		TDBRow NewRow = _CreateRow();
-		m_vRows.push_back(NewRow);
-
-		return NewRow;
+		delete [] m_pData;
 	}
 
-	/**
-	 * @TODO[egarcia]: Pool, Memory Management
-	 */
-	CPropertyDB::TDBRow CPropertyDB::_CreateRow() const
-	{
-		return static_cast<TDBRow>(new char[m_uCurRowSize]);
-	}
+
 
 } // namespace Game

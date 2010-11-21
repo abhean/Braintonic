@@ -18,18 +18,21 @@ int main(int argc, char* argv[])
 	Game::CPropertyDB PropertyDB;
 	PropertyDB.DEBUG_AddPropertyDef(new Game::CPropertyDef(ID(TestProperty), Game::PROPERTY_TYPE_FLOAT));
 	PropertyDB.DEBUG_AddPropertyDef(new Game::CPropertyDef(ID(TestProperty2), Game::PROPERTY_TYPE_STRING));
-	PropertyDB.CreateAndPushRow();
-	PropertyDB.CreateAndPushRow();
-	PropertyDB.CreateAndPushRow();
-	PropertyDB.CreateAndPushRow();
-	PropertyDB.CreateAndPushRow();
-	PropertyDB.CreateAndPushRow();
-	PropertyDB.CreateAndPushRow();
-	PropertyDB.CreateAndPushRow();
+	PropertyDB.AllocRows(10);
+	PropertyDB.CreateRow();
+	PropertyDB.CreateRow();
+	PropertyDB.CreateRow();
+	PropertyDB.CreateRow();
+	PropertyDB.CreateRow();
+	PropertyDB.CreateRow();
+	PropertyDB.CreateRow();
+
+	PropertyDB.SetPropertyValue<float>(0, 0, 1.2);
+	std::cout << "TestProperty, Row 0, Value = " << PropertyDB.GetPropertyValue<float>(0, 0) << std::endl;
 
 	std::cout << "RowSize: " << PropertyDB._GetRowSize() << std::endl;
 
-	uint32 uRow = 7;
+	uint32 uRow = 3;
 	uint32 uProperty = 1;
 	std::cout << "Offset Row [" << uRow << "], Property [" << uProperty << "] : " << PropertyDB._CalculateValueOffset(uRow, uProperty) << std::endl;
 
