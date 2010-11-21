@@ -83,7 +83,7 @@ namespace Game
 	 */
 	uint16 CPropertyDB::_GetRowSize() const
 	{
-		return _CalculateRowSize();
+		return m_uCurRowSize;
 	}
 
 

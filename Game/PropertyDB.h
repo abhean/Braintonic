@@ -18,9 +18,6 @@ class CPropertyDB
 {
 public:
 
-	// Generic DBRow
-	typedef			std::vector<char>			TData;
-
 	// Initialization / Destruction
 					CPropertyDB					() :
 						m_uNumRows(0),

@@ -46,6 +46,8 @@ int main(int argc, char* argv[])
 
 	std::cout << static_cast<int>(Game::aPropertyTypeDef[Game::PROPERTY_TYPE_STRING].uSize) << std::endl;
 
+	std::cout << typeid(Game::CPropertyDB).name() << std::endl;
+
 	// Wait for a key
 	char cInput;
 	std::cin >> cInput;
