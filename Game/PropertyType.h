@@ -7,10 +7,13 @@
 
 #include <boost/utility.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/variant.hpp>
+#include <boost/variant/get.hpp>
 
 namespace Game
 {
-	class CPropertyDefSet;
+
+	class CPropertyDB;
 
 
 	enum EPropertyType : uint8
@@ -18,11 +21,14 @@ namespace Game
 		PROPERTY_TYPE_INT32,
 		PROPERTY_TYPE_FLOAT,
 		PROPERTY_TYPE_STRING,
-		PROPERTY_TYPE_PROPERTY_SET_PTR,
+		PROPERTY_TYPE_PROPERTY_DB_PTR,
 		//...
 		PROPERTY_TYPE_COUNT,
 		PROPERTY_TYPE_INVALID = 0x7F
 	};
+
+
+	typedef boost::variant< int32, f32, std::string, CPropertyDB*> TPropertyValue;
 
 	// @TODO[egarcia]: Provide functions to convert between enum and string (both ways) (MACRO: value / string table?)
 
@@ -64,18 +70,18 @@ namespace Game
 	};
 
 	template <>
-	struct property_type_traits<CPropertyDefSet*>
+	struct property_type_traits<CPropertyDB*>
 	{
-		static const EPropertyType ePropertyType = PROPERTY_TYPE_PROPERTY_SET_PTR;
+		static const EPropertyType ePropertyType = PROPERTY_TYPE_PROPERTY_DB_PTR;
 	};
 
 
 	// @TODO[egarcia]: Static assert to enforce num elements, order?
 	PROPERTY_TYPE_DEF_TABLE_BEGIN
-		PROPERTY_TYPE_DEF(PROPERTY_TYPE_INT32,			  int32)
-		PROPERTY_TYPE_DEF(PROPERTY_TYPE_FLOAT,			  float)
-		PROPERTY_TYPE_DEF(PROPERTY_TYPE_STRING,			  std::string)
-		PROPERTY_TYPE_DEF(PROPERTY_TYPE_PROPERTY_SET_PTR, CPropertyDefSet*)
+		PROPERTY_TYPE_DEF(PROPERTY_TYPE_INT32,			 int32)
+		PROPERTY_TYPE_DEF(PROPERTY_TYPE_FLOAT,			 float)
+		PROPERTY_TYPE_DEF(PROPERTY_TYPE_STRING,			 std::string)
+		PROPERTY_TYPE_DEF(PROPERTY_TYPE_PROPERTY_DB_PTR, CPropertyDB*)
 	PROPERTY_TYPE_DEF_TABLE_END
 
 

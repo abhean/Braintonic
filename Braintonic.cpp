@@ -18,8 +18,9 @@ int main(int argc, char* argv[])
 	Game::CPropertyDB PropertyDB;
 	PropertyDB.DEBUG_AddPropertyDef(new Game::CPropertyDef(ID(TestProperty), Game::PROPERTY_TYPE_FLOAT));
 	PropertyDB.DEBUG_AddPropertyDef(new Game::CPropertyDef(ID(TestProperty2), Game::PROPERTY_TYPE_STRING));
+	PropertyDB.DEBUG_AddPropertyDef(new Game::CPropertyDef(ID(TestProperty2), Game::PROPERTY_TYPE_INT32));
 	PropertyDB.AllocRows(10);
-	PropertyDB.CreateRow();
+	PropertyDB.CreateRow({3.2f, "hola", 4});
 	PropertyDB.CreateRow();
 	PropertyDB.CreateRow();
 	PropertyDB.CreateRow();
@@ -27,8 +28,12 @@ int main(int argc, char* argv[])
 	PropertyDB.CreateRow();
 	PropertyDB.CreateRow();
 
-	PropertyDB.SetPropertyValue<float>(0, 0, 1.2);
-	std::cout << "TestProperty, Row 0, Value = " << PropertyDB.GetPropertyValue<float>(0, 0) << std::endl;
+	//PropertyDB.SetPropertyValue<float>(0, 0, 1.2);
+	std::cout << "TestProperty, Row 0, Property 0, Value = " << PropertyDB.GetPropertyValue<float>(0, 0) << std::endl;
+
+	//PropertyDB.SetPropertyValue<std::string>(0, 1, sTestText);
+	std::cout << "TestProperty, Row 0, Property 1, Value = " << PropertyDB.GetPropertyValue<std::string>(0, 1) << std::endl;
+
 
 	std::cout << "RowSize: " << PropertyDB._GetRowSize() << std::endl;
 

@@ -33,14 +33,19 @@ public:
 	TValueType		GetPropertyValue			(uint32 _uRowIndex, uint32 _uPropertyIndex) const;
 
 	template <typename TValueType>
-	void			SetPropertyValue			(uint32 _uRowIndex, uint32 _uPropertyIndex, const TValueType& _Value);
+	void			SetPropertyValue			(uint32 _uRowIndex, uint32 _uPropertyIndex, TValueType const& _Value);
+
+	void			SetPropertyValue			(uint32 _uRowIndex, uint32 _uPropertyIndex, TPropertyValue const& _Value);
 
 	void			DEBUG_AddPropertyDef		(CPropertyDef* _pPropertyDef) { _AddPropertyDef(_pPropertyDef); }
+	uint32 			GetNumProperties			() const;
 
 	void			AllocRows					(uint32 _uNumRows);
 
 	uint32			CreateRow					();
+	uint32			CreateRow					(std::initializer_list<TPropertyValue> _lPropertyValues);
 	uint32			GetNumRows					() const;
+
 	bool			IsEmpty						() const;
 
 //private:
@@ -77,20 +82,23 @@ public:
 	uint16									m_uCurRowSize;
 };
 
+
+
 /**
  *
  */
 template <typename TValueType>
-void CPropertyDB::SetPropertyValue(uint32 _uRowIndex, uint32 _uPropertyIndex, const TValueType& _ValueType)
+void CPropertyDB::SetPropertyValue(uint32 _uRowIndex, uint32 _uPropertyIndex, TValueType const& _ValueType)
 {
 	// Check Property Type is right
 	assert(m_vpPropertyDefs[_uPropertyIndex].GetType() == property_type_traits<TValueType>::ePropertyType);
 
-
 	char* pDataMemPtr = _GetDataMemPtr();
 	uint32 uPropertyValueOffset = _CalculateValueOffset(_uRowIndex, _uPropertyIndex);
 
-	*reinterpret_cast<TValueType*>(pDataMemPtr + uPropertyValueOffset) = _ValueType;
+	new (pDataMemPtr + uPropertyValueOffset) TValueType(_ValueType);
+
+	//*reinterpret_cast<TValueType*>(pDataMemPtr + uPropertyValueOffset) = _ValueType;
 }
 
 /**
@@ -102,12 +110,10 @@ TValueType	CPropertyDB::GetPropertyValue(uint32 _uRowIndex, uint32 _uPropertyInd
 	// Check Property Type is right
 	assert(m_vpPropertyDefs[_uPropertyIndex].GetType() == property_type_traits<TValueType>::ePropertyType);
 
-
 	char const* pDataMemPtr = _GetDataMemPtr();
 	uint32 uPropertyValueOffset = _CalculateValueOffset(_uRowIndex, _uPropertyIndex);
 
 	return *reinterpret_cast<const TValueType*>(pDataMemPtr + uPropertyValueOffset);
-
 }
 
 
